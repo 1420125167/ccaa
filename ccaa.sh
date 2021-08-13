@@ -12,12 +12,12 @@ if [ $1 = 'cdn' ]
 	then
 	aria2_url='http://soft.xiaoz.top/linux/aria2-1.35.0-linux-gnu-64bit-build1.tar.bz2'
 	filebrowser_url='https://github.com/filebrowser/filebrowser/releases/download/v2.16.1/linux-amd64-filebrowser.tar.gz'
-	master_url='https://github.com/helloxz/ccaa/archive/master.zip'
+	master_url='https://github.com/1420125167/ccaa/archive/master.zip'
 	ccaa_web_url='http://soft.xiaoz.top/linux/ccaa_web.tar.gz'
 	else
 	aria2_url='https://github.com/q3aql/aria2-static-builds/releases/download/v1.35.0/aria2-1.35.0-linux-gnu-64bit-build1.tar.bz2'
 	filebrowser_url='https://github.com/filebrowser/filebrowser/releases/download/v2.16.1/linux-amd64-filebrowser.tar.gz'
-	master_url='https://github.com/helloxz/ccaa/archive/master.zip'
+	master_url='https://github.com/1420125167/ccaa/archive/master.zip'
 	ccaa_web_url='http://soft.xiaoz.org/linux/ccaa_web.tar.gz'
 fi
 
@@ -79,10 +79,9 @@ function install_file_browser(){
 	#初始化filebrowser数据库
 	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config init
 	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config set --address 0.0.0.0
-	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config set --port 6080
+	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config set --port 6081
 	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config set --locale zh-cn
 	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config set --log /etc/ccaa/filebrowser.log
-	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db users add ccaa admin --perm.admin
 	cd
 }
 #处理配置文件
@@ -93,7 +92,7 @@ function dealconf(){
 	#解压
 	unzip master.zip
 	#复制CCAA核心目录
-	mv ccaa-master/ccaa_dir /etc/ccaa
+	mv ccaa-master/ccaa_dir/* /etc/ccaa
 	#创建aria2日志文件
 	touch /var/log/aria2.log
 	#upbt增加执行权限
@@ -187,7 +186,10 @@ function setting(){
 
 	#获取ip
 	osip=$(curl -4s https://api.ip.sb/ip)
-	
+
+	#设置filebrowser默认路径
+	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db users add ccaa admin --perm.admin
+	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config set --root ${downpath}
 	#执行替换操作
 	mkdir -p ${downpath}
 	sed -i "s%dir=%dir=${downpath}%g" /etc/ccaa/aria2.conf
@@ -206,12 +208,13 @@ function setting(){
 	cp ccaa_web /usr/sbin/
 	chmod +x /usr/sbin/ccaa_web
 
+	
 	#启动服务
 	nohup sudo -u ccaa aria2c --conf-path=/etc/ccaa/aria2.conf > /var/log/aria2.log 2>&1 &
 	#nohup caddy -conf="/etc/ccaa/caddy.conf" > /etc/ccaa/caddy.log 2>&1 &
 	nohup sudo -u ccaa /usr/sbin/ccaa_web > /var/log/ccaa_web.log 2>&1 &
 	#运行filebrowser
-	nohup sudo -u ccaa filebrowser -c /etc/ccaa/config.json > /var/log/fbrun.log 2>&1 &
+	nohup /usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db > /var/log/filebrowser.log 2>&1 &
 
 	#重置权限
 	chown -R ccaa:ccaa /etc/ccaa/
