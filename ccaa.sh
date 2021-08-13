@@ -11,12 +11,12 @@ export PATH
 if [ $1 = 'cdn' ]
 	then
 	aria2_url='http://soft.xiaoz.top/linux/aria2-1.35.0-linux-gnu-64bit-build1.tar.bz2'
-	filebrowser_url='http://soft.xiaoz.top/linux/linux-amd64-filebrowser.tar.gz'
+	filebrowser_url='https://github.com/filebrowser/filebrowser/releases/download/v2.16.1/linux-amd64-filebrowser.tar.gz'
 	master_url='https://github.com/helloxz/ccaa/archive/master.zip'
 	ccaa_web_url='http://soft.xiaoz.top/linux/ccaa_web.tar.gz'
 	else
 	aria2_url='https://github.com/q3aql/aria2-static-builds/releases/download/v1.35.0/aria2-1.35.0-linux-gnu-64bit-build1.tar.bz2'
-	filebrowser_url='https://github.com/filebrowser/filebrowser/releases/download/v2.0.16/linux-amd64-filebrowser.tar.gz'
+	filebrowser_url='https://github.com/filebrowser/filebrowser/releases/download/v2.16.1/linux-amd64-filebrowser.tar.gz'
 	master_url='https://github.com/helloxz/ccaa/archive/master.zip'
 	ccaa_web_url='http://soft.xiaoz.org/linux/ccaa_web.tar.gz'
 fi
@@ -74,6 +74,15 @@ function install_file_browser(){
 	tar -zxvf linux-amd64-filebrowser.tar.gz
 	#移动位置
 	mv filebrowser /usr/sbin
+	#设置权限
+	sudo chmod 777 /usr/sbin/filebrowser
+	#初始化filebrowser数据库
+	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config init
+	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config set --address 0.0.0.0
+	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config set --port 6080
+	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config set --locale zh-cn
+	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db config set --log /etc/ccaa/filebrowser.log
+	/usr/sbin/filebrowser -d /etc/ccaa/filebrowser.db users add ccaa admin --perm.admin
 	cd
 }
 #处理配置文件
