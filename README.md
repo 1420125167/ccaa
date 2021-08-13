@@ -1,6 +1,7 @@
 # CCAA
 原为`CentOS + Caddy + AriaNg + Aria2`，故命名为CCAA，不过现在不仅仅支持CentOS，主流的Debian、Ubuntu也已经支持，自2.0版本已移除Caddy，改用Golang写了一个简单的webserver来运行AriaNg
-原作者为https://github.com/helloxz/ccaa 本fork仅将filebrowser升级为2.16.1
+
+项目原地址为https://github.com/helloxz/ccaa 本fork仅将filebrowser升级为2.16.1
 
 - Aria2 提供离线下载
 - ccaa_web支撑AriaNg运行
